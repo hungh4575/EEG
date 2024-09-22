@@ -11,7 +11,7 @@ bool activePins[numPins];  // Active pins to read
 
 // Timer interrupt to read analog values
 IntervalTimer sampleTimer;
-
+uint16_t counter=0;
 // Function to convert raw ADC values to voltage
 float adcToVoltage(int rawValue) {
     return (rawValue / 4095.0) * 3.3;  // Scale based on reference voltage
@@ -21,13 +21,14 @@ void sampleData() {
     for (int i = 0; i < numPins; i++) {
         if (activePins[i]) {  // Only read from active pins
             int rawValue = analogRead(analogPins[i]);  // Read the raw ADC value
-            buffer[i] = adcToVoltage(rawValue);  // Convert to voltage and store
+            // buffer[i] = adcToVoltage(rawValue);  // Convert to voltage and store
+            buffer[i] = counter;
         }
     }
 
     // Send the active pin data over USB serial
     Serial.write((uint8_t*)buffer, sizeof(buffer));  // Send the voltage values as raw bytes
-
+    counter+=1;
     // Add a manual delay to throttle the sample rate further
     delayMicroseconds(500);  // Adjust this delay to achieve the desired sample rate
 }
